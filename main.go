@@ -2,6 +2,7 @@ package main
 
 import (
 	"dreampicai/handler"
+	"dreampicai/pkg/sb"
 	"embed"
 	"log"
 	"log/slog"
@@ -26,6 +27,7 @@ func main() {
 	router.Handle("/*", http.StripPrefix("/", http.FileServer(http.FS(FS))))
 	router.Get("/", handler.Make(handler.HandleHomeIndex))
 	router.Get("/login", handler.Make(handler.HandleLoginIndex))
+	router.Post("/login", handler.Make(handler.HandleLoginCreate))
 
 	port := os.Getenv("HTTP_LISTEN_ADDR")
 	slog.Info("application running", "port", port)
@@ -33,5 +35,8 @@ func main() {
 }
 
 func initEverything() error {
-	return godotenv.Load()
+	if err := godotenv.Load(); err != nil {
+		return err
+	}
+	return sb.Init()
 }
